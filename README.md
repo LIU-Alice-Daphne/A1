@@ -151,3 +151,5 @@ Dice系数的计算公式如下：
 
 ## 五、效果图
 ![](https://github.com/LIU-Alice-Daphne/A1/blob/main/images/%E7%B4%AB%E7%A0%82%E5%A3%B6%E8%AF%86%E5%88%AB%20(1).001.jpeg)
+
+![](https://github.com/LIU-Alice-Daphne/A1/blob/main/images/3.png)
