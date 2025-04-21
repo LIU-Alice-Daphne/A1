@@ -76,41 +76,42 @@ inputs/
 |权重保存策略|val\_loss最小时保存 best\_model.pth|
 
 2.pytorch代码
-
+```python
 class UNet(nn.Module):
-`    `def \_\_init\_\_(self, num\_classes, input\_channels=3, deep\_supervision=False,\*\*kwargs):
-`        `super().\_\_init\_\_()
+    def __init__(self, num_classes, input_channels=3, deep_supervision=False,**kwargs):
+        super().__init__()
 
-`        `nb\_filter = [32, 64, 128, 256, 512]
+        nb_filter = [32, 64, 128, 256, 512]
 
-`        `self.pool = nn.MaxPool2d(2, 2)
-`        `self.up = nn.Upsample(scale\_factor=2, mode='bilinear', align\_corners=True)#scale\_factor:放大的倍数  插值
+        self.pool = nn.MaxPool2d(2, 2)
+        self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)#scale_factor:放大的倍数  插值
 
-`        `self.conv0\_0 = VGGBlock(input\_channels, nb\_filter[0], nb\_filter[0])
-`        `self.conv1\_0 = VGGBlock(nb\_filter[0], nb\_filter[1], nb\_filter[1])
-`        `self.conv2\_0 = VGGBlock(nb\_filter[1], nb\_filter[2], nb\_filter[2])
-`        `self.conv3\_0 = VGGBlock(nb\_filter[2], nb\_filter[3], nb\_filter[3])
-`        `self.conv4\_0 = VGGBlock(nb\_filter[3], nb\_filter[4], nb\_filter[4])
+        self.conv0_0 = VGGBlock(input_channels, nb_filter[0], nb_filter[0])
+        self.conv1_0 = VGGBlock(nb_filter[0], nb_filter[1], nb_filter[1])
+        self.conv2_0 = VGGBlock(nb_filter[1], nb_filter[2], nb_filter[2])
+        self.conv3_0 = VGGBlock(nb_filter[2], nb_filter[3], nb_filter[3])
+        self.conv4_0 = VGGBlock(nb_filter[3], nb_filter[4], nb_filter[4])
 
-`        `self.conv3\_1 = VGGBlock(nb\_filter[3]+nb\_filter[4], nb\_filter[3], nb\_filter[3])
-`        `self.conv2\_2 = VGGBlock(nb\_filter[2]+nb\_filter[3], nb\_filter[2], nb\_filter[2])
-`        `self.conv1\_3 = VGGBlock(nb\_filter[1]+nb\_filter[2], nb\_filter[1], nb\_filter[1])
-`        `self.conv0\_4 = VGGBlock(nb\_filter[0]+nb\_filter[1], nb\_filter[0], nb\_filter[0])
+        self.conv3_1 = VGGBlock(nb_filter[3]+nb_filter[4], nb_filter[3], nb_filter[3])
+        self.conv2_2 = VGGBlock(nb_filter[2]+nb_filter[3], nb_filter[2], nb_filter[2])
+        self.conv1_3 = VGGBlock(nb_filter[1]+nb_filter[2], nb_filter[1], nb_filter[1])
+        self.conv0_4 = VGGBlock(nb_filter[0]+nb_filter[1], nb_filter[0], nb_filter[0])
 
-`        `self.final = nn.Conv2d(nb\_filter[0], num\_classes, kernel\_size=1)
+        self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
 
-`    `def forward(self, input):
-`        `x0\_0 = self.conv0\_0(input)
-`        `x4\_0 = self.conv4\_0(self.pool(x3\_0))
 
-`        `x3\_1 = self.conv3\_1(torch.cat([x3\_0, self.up(x4\_0)], 1))
-`        `x2\_2 = self.conv2\_2(torch.cat([x2\_0, self.up(x3\_1)], 1))
-`        `x1\_3 = self.conv1\_3(torch.cat([x1\_0, self.up(x2\_2)], 1))
-`        `x0\_4 = self.conv0\_4(torch.cat([x0\_0, self.up(x1\_3)], 1))
+    def forward(self, input):
+        x0_0 = self.conv0_0(input)
+        x1_0 = self.conv1_0(self.pool(x0_0))
+        x2_0 = self.conv2_0(self.pool(x1_0))
+        x3_0 = self.conv3_0(self.pool(x2_0))
+        x4_0 = self.conv4_0(self.pool(x3_0))
 
-`        `output = self.final(x0\_4)
-`        `return output
+        x3_1 = self.conv3_1(torch.cat([x3_0, self.up(x4_0)], 1))
+        x2_2 = self.conv2_2(torch.cat([x2_0, self.up(x3_1)], 1))
+        x1_3 = self.conv1_3(torch.cat([x1_0, self.up(x2_2)], 1))
+        x0_4 = self.conv0_4(torch.cat([x0_0, self.up(x1_3)], 1))
 
-`        `x1\_0 = self.conv1\_0(self.pool(x0\_0))
-`        `x2\_0 = self.conv2\_0(self.pool(x1\_0))
-`        `x3\_0 = self.conv3\_0(self.pool(x2\_0))
+        output = self.final(x0_4)
+        return output
+```
