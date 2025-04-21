@@ -142,4 +142,4 @@ class UNet(nn.Module):
 分析上述指标，可以表明该方法可以顺利完成紫砂壶的识别并进行分割。
 
 ## 五、效果图
-![](紫砂壶识别%20(1).001.jpeg)
+![](https://github.com/LIU-Alice-Daphne/A1/blob/main/images/%E7%B4%AB%E7%A0%82%E5%A3%B6%E8%AF%86%E5%88%AB%20(1).001.jpeg)
