@@ -7,7 +7,7 @@
 - 分割效果可视化与评估<br>
 
 ## 二、数据准备
-1. 数据收集
+1.数据收集
 
 紫砂壶图像数据在公开平台中较为稀缺，且质量参差不齐。通过网络爬虫与人工拍摄两种方式共计收集到约200张图像，并配合以下注意事项进行筛选：
 
@@ -21,7 +21,7 @@
 - 分类数量少：目前数据集中仅覆盖西施壶、石瓢壶、井栏壶、仿古壶等4类
 - 结构残缺：部分图像仅包含壶体局部（如左半部分或无壶盖）
 
-2. 数据增强
+2.数据增强
 
 为提升模型对不同姿态、光照及图像畸变的鲁棒性，采用Albumentations数据增强库进行处理，增强后图像大大缓解了样本不足的问题。增强方式包括：
 
@@ -30,7 +30,7 @@
 - 高斯模糊（适度）
 - 仿射变换 / 缩放
 
-3. 数据存放格式
+3.数据存放格式
 
 inputs/
 
@@ -52,7 +52,7 @@ inputs/
 
 ## 三、模型设计与训练
 
-1. 模型架构
+1.模型架构
 
 本项目选用经典语义分割模型 **U-Net** 作为主干网络，结构如下：
 
@@ -75,4 +75,42 @@ inputs/
 |学习率调度策略|CosineAnnealingLR|
 |权重保存策略|val\_loss最小时保存 best\_model.pth|
 
+2.pytorch代码
 
+class UNet(nn.Module):
+`    `def \_\_init\_\_(self, num\_classes, input\_channels=3, deep\_supervision=False,\*\*kwargs):
+`        `super().\_\_init\_\_()
+
+`        `nb\_filter = [32, 64, 128, 256, 512]
+
+`        `self.pool = nn.MaxPool2d(2, 2)
+`        `self.up = nn.Upsample(scale\_factor=2, mode='bilinear', align\_corners=True)#scale\_factor:放大的倍数  插值
+
+`        `self.conv0\_0 = VGGBlock(input\_channels, nb\_filter[0], nb\_filter[0])
+`        `self.conv1\_0 = VGGBlock(nb\_filter[0], nb\_filter[1], nb\_filter[1])
+`        `self.conv2\_0 = VGGBlock(nb\_filter[1], nb\_filter[2], nb\_filter[2])
+`        `self.conv3\_0 = VGGBlock(nb\_filter[2], nb\_filter[3], nb\_filter[3])
+`        `self.conv4\_0 = VGGBlock(nb\_filter[3], nb\_filter[4], nb\_filter[4])
+
+`        `self.conv3\_1 = VGGBlock(nb\_filter[3]+nb\_filter[4], nb\_filter[3], nb\_filter[3])
+`        `self.conv2\_2 = VGGBlock(nb\_filter[2]+nb\_filter[3], nb\_filter[2], nb\_filter[2])
+`        `self.conv1\_3 = VGGBlock(nb\_filter[1]+nb\_filter[2], nb\_filter[1], nb\_filter[1])
+`        `self.conv0\_4 = VGGBlock(nb\_filter[0]+nb\_filter[1], nb\_filter[0], nb\_filter[0])
+
+`        `self.final = nn.Conv2d(nb\_filter[0], num\_classes, kernel\_size=1)
+
+`    `def forward(self, input):
+`        `x0\_0 = self.conv0\_0(input)
+`        `x4\_0 = self.conv4\_0(self.pool(x3\_0))
+
+`        `x3\_1 = self.conv3\_1(torch.cat([x3\_0, self.up(x4\_0)], 1))
+`        `x2\_2 = self.conv2\_2(torch.cat([x2\_0, self.up(x3\_1)], 1))
+`        `x1\_3 = self.conv1\_3(torch.cat([x1\_0, self.up(x2\_2)], 1))
+`        `x0\_4 = self.conv0\_4(torch.cat([x0\_0, self.up(x1\_3)], 1))
+
+`        `output = self.final(x0\_4)
+`        `return output
+
+`        `x1\_0 = self.conv1\_0(self.pool(x0\_0))
+`        `x2\_0 = self.conv2\_0(self.pool(x1\_0))
+`        `x3\_0 = self.conv3\_0(self.pool(x2\_0))
