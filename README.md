@@ -144,6 +144,7 @@ Dice：Dice系数是一种集合相似度度量指标,通常用于计算两个�
 在Dice评价函数中，两个最重要的数量：True Positive（TP）和False Positive（FP）.
 
 Dice系数的计算公式如下：
+
 ![](https://github.com/LIU-Alice-Daphne/A1/blob/main/images/2.png)
 
 分析上述指标，可以表明该方法可以顺利完成紫砂壶的识别并进行分割。
