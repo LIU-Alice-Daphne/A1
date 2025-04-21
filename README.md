@@ -30,7 +30,7 @@
 - 高斯模糊（适度）
 - 仿射变换 / 缩放
 
-3.数据存放格式
+3. 数据存放格式
 
 inputs/
 
@@ -62,8 +62,8 @@ inputs/
 
 如图所示：
 
-![](C:\Users\ASUS\Desktop)
-![图片描述](image_path.png)
+![](https://i-blog.csdnimg.cn/blog\_migrate/8b0fab47a42c35a97cea1d5ebd0eb68d.png#pic\_center "8b0fab47a42c35a97cea1d5ebd0eb68d")
+
 |**组件**|**参数/方法**|
 | :-: | :-: |
 |基础模型|Unet|
